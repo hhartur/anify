@@ -31,7 +31,7 @@ const UA   =
   "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36";
 
 let API_PORT = 3000;
-let _base    = process.env.API_BASE_URL?.replace(/\/$/, "") || `${_base}`;
+let _base = process.env.API_BASE_URL?.replace(/\/$/, "") || `http://localhost:${API_PORT}`;
 
 // ── cleanUrls — segunda linha de defesa para URLs residuais do site
 function normalizePath(url) {
