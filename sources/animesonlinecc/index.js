@@ -32,21 +32,21 @@ const UA =
 
 // ── HTTP
 async function http(url, referer = BASE) {
+  // Primeira requisição para pegar o cookie
+  const cookieRes = await fetch(BASE, {
+    headers: { "User-Agent": UA, "Referer": referer }
+  });
+  const setCookie = cookieRes.headers.get("set-cookie") || "";
+  const cookieMatch = setCookie.match(/(starstruck_[^=]+=\S+?);/);
+  const cookie = cookieMatch ? cookieMatch[1] : "";
+
   const res = await fetch(url, {
     headers: {
       "User-Agent": UA,
-      Referer: referer,
+      "Referer": referer,
       "Accept-Language": "pt-BR,pt;q=0.9",
-      Accept:
-        "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8",
-      "Accept-Encoding": "gzip, deflate, br",
-      "Cache-Control": "no-cache",
-      Pragma: "no-cache",
-      "Sec-Fetch-Dest": "document",
-      "Sec-Fetch-Mode": "navigate",
-      "Sec-Fetch-Site": "none",
-      "Sec-Fetch-User": "?1",
-      "Upgrade-Insecure-Requests": "1",
+      "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+      "Cookie": cookie,
     },
   });
   if (!res.ok)
