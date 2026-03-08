@@ -24,27 +24,14 @@ import {
   n,
 } from "./parsers.js";
 
+import { http } from "../http.js";
+
 const BASE = "https://goyabu.io";
 const UA   =
   "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36";
 
 let API_PORT = 3000;
 let _base    = process.env.API_BASE_URL?.replace(/\/$/, "") || `${_base}`;
-
-// ── HTTP helper
-async function http(url, referer = BASE) {
-  const res = await fetch(url, {
-    headers: {
-      "User-Agent": UA,
-      Referer: referer,
-      "Accept-Language": "pt-BR,pt;q=0.9",
-      Accept: "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
-    },
-  });
-  if (!res.ok)
-    throw Object.assign(new Error(`Upstream ${res.status}: ${url}`), { statusCode: res.status });
-  return res.text();
-}
 
 // ── cleanUrls — segunda linha de defesa para URLs residuais do site
 function normalizePath(url) {

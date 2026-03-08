@@ -26,35 +26,11 @@ import {
   setParserPort,
 } from "./parsers.js";
 
+import { http } from "../http.js";
+
 const BASE = "https://animesonlinecc.to";
 const UA =
   "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36";
-
-// ── HTTP
-async function http(url, referer = BASE) {
-  // Primeira requisição para pegar o cookie
-  const cookieRes = await fetch(BASE, {
-    headers: { "User-Agent": UA, "Referer": referer }
-  });
-  const setCookie = cookieRes.headers.get("set-cookie") || "";
-  const cookieMatch = setCookie.match(/(starstruck_[^=]+=\S+?);/);
-  const cookie = cookieMatch ? cookieMatch[1] : "";
-
-  const res = await fetch(url, {
-    headers: {
-      "User-Agent": UA,
-      "Referer": referer,
-      "Accept-Language": "pt-BR,pt;q=0.9",
-      "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
-      "Cookie": cookie,
-    },
-  });
-  if (!res.ok)
-    throw Object.assign(new Error(`Upstream ${res.status}: ${url}`), {
-      statusCode: res.status,
-    });
-  return res.text();
-}
 
 // ── Port da API (injetada via setPort)
 let API_PORT = 3000;
