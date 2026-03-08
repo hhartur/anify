@@ -1,10 +1,8 @@
-const WORKER = process.env.PROXY_WORKER_URL || "";
-
 const UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36";
 
-export async function http(url, referer = BASE) {
+export async function http(url, referer) {
   const WORKER = process.env.PROXY_WORKER_URL || "";
-  
+
   console.log(`[http] PROXY_WORKER_URL=${WORKER || "(vazio)"}`);
   console.log(`[http] url=${url}`);
 
@@ -17,7 +15,7 @@ export async function http(url, referer = BASE) {
   const res = await fetch(fetchUrl, {
     headers: {
       "User-Agent": UA,
-      Referer: referer,
+      Referer: referer || new URL(url).origin,
       "Accept-Language": "pt-BR,pt;q=0.9",
       Accept: "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
     },
