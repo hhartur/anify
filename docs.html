@@ -1,0 +1,1104 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Anify — API Reference</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600&family=Syne:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+<style>
+/* ── RESET & TOKENS ─────────────────────────────────────── */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --mono:'JetBrains Mono',monospace;
+  --sans:'Syne',sans-serif;
+  --r:6px;
+  --sw:260px;   /* sidebar width */
+  --top:48px;   /* topbar height */
+}
+[data-theme="dark"]{
+  --bg:#0c0c10;--bg2:#111116;--bg3:#17171e;--bg4:#1e1e28;
+  --border:#1d1d28;--border2:#26263a;
+  --text:#e2e2ef;--text2:#8888a8;--text3:#3e3e58;
+  --accent:#7b68ff;--accent2:#5a4de0;
+  --accent-gl:rgba(123,104,255,.08);--accent-bd:rgba(123,104,255,.2);
+  --green:#3ecf8e;--green-bg:rgba(62,207,142,.07);--green-bd:rgba(62,207,142,.18);
+  --amber:#f0a040;--amber-bg:rgba(240,160,64,.07);--amber-bd:rgba(240,160,64,.2);
+  --red:#f06060;--red-bg:rgba(240,96,96,.07);--red-bd:rgba(240,96,96,.18);
+}
+[data-theme="light"]{
+  --bg:#f5f5f9;--bg2:#fff;--bg3:#f0f0f5;--bg4:#e8e8f0;
+  --border:#e2e2ee;--border2:#d0d0e0;
+  --text:#14142a;--text2:#4a4a6a;--text3:#a0a0c0;
+  --accent:#5a4de0;--accent2:#4338ca;
+  --accent-gl:rgba(90,77,224,.06);--accent-bd:rgba(90,77,224,.18);
+  --green:#059669;--green-bg:rgba(5,150,105,.06);--green-bd:rgba(5,150,105,.16);
+  --amber:#d97706;--amber-bg:rgba(217,119,6,.06);--amber-bd:rgba(217,119,6,.18);
+  --red:#dc2626;--red-bg:rgba(220,38,38,.06);--red-bd:rgba(220,38,38,.16);
+}
+html{scroll-behavior:auto}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:14px;line-height:1.6;overflow-x:hidden}
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px}
+
+/* ── TOPBAR ─────────────────────────────────────────────── */
+.topbar{
+  position:fixed;top:0;left:0;right:0;height:var(--top);z-index:300;
+  background:var(--bg2);border-bottom:1px solid var(--border);
+  display:flex;align-items:center;padding:0 12px 0 0;gap:0;
+}
+.tb-logo{
+  width:var(--sw);flex-shrink:0;display:flex;align-items:center;gap:10px;
+  padding:0 18px;border-right:1px solid var(--border);height:100%;
+}
+.tb-mark{
+  width:28px;height:28px;background:var(--accent);border-radius:7px;
+  display:grid;place-items:center;font-family:var(--mono);font-size:12px;
+  font-weight:700;color:#fff;flex-shrink:0;box-shadow:0 0 18px rgba(123,104,255,.3);
+}
+.tb-name{font-size:15px;font-weight:700;letter-spacing:-.3px;white-space:nowrap}
+.tb-ver{
+  margin-left:auto;font-family:var(--mono);font-size:9px;color:var(--text3);
+  background:var(--bg3);border:1px solid var(--border);padding:2px 6px;border-radius:3px;
+}
+/* ── BASE URL EDITOR (topbar) ───────────────────────────── */
+.tb-baseurl{
+  display:flex;align-items:center;gap:0;
+  background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);
+  overflow:hidden;flex:1;min-width:180px;max-width:340px;margin:0 8px;
+  transition:border-color .15s;
+}
+.tb-baseurl:focus-within{border-color:var(--accent)}
+.tb-baseurl-lbl{
+  padding:0 10px;font-family:var(--mono);font-size:9px;text-transform:uppercase;
+  letter-spacing:.06em;color:var(--text3);background:var(--bg4);border-right:1px solid var(--border);
+  white-space:nowrap;height:100%;display:flex;align-items:center;flex-shrink:0;
+}
+.tb-baseurl-input{
+  flex:1;min-width:0;background:none;border:none;outline:none;
+  color:var(--accent);font-family:var(--mono);font-size:11.5px;
+  padding:7px 8px;
+}
+.tb-baseurl-reset{
+  background:none;border:none;border-left:1px solid var(--border);
+  color:var(--text3);cursor:pointer;padding:0 9px;height:100%;
+  display:flex;align-items:center;font-size:10px;flex-shrink:0;
+  transition:color .14s,background .14s;
+}
+.tb-baseurl-reset:hover{color:var(--accent);background:var(--accent-gl)}
+@media(max-width:860px){.tb-baseurl{max-width:200px}}
+@media(max-width:680px){.tb-baseurl{max-width:unset;flex:1;margin:0 6px}}
+.tb-search{flex-shrink:0;flex:0 0 auto;min-width:unset}
+@media(max-width:760px){.tb-search span{display:none}.tb-search{padding:7px 10px}}
+@media(max-width:600px){.tb-search{display:none}}
+.tb-search i{font-size:11px;flex-shrink:0}
+.tb-search span{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tb-kbd{display:flex;gap:3px;flex-shrink:0}
+.kbd{font-family:var(--mono);font-size:9px;color:var(--text3);background:var(--bg4);border:1px solid var(--border2);padding:2px 5px;border-radius:3px}
+.tb-right{display:flex;align-items:center;gap:6px;flex-shrink:0;margin-left:auto}
+.tb-tags{display:flex;gap:4px}
+.tb-tag{font-family:var(--mono);font-size:9px;color:var(--text3);border:1px solid var(--border);padding:3px 7px;border-radius:3px}
+.icon-btn{
+  width:30px;height:30px;background:none;border:1px solid var(--border);border-radius:var(--r);
+  cursor:pointer;color:var(--text2);display:grid;place-items:center;font-size:12px;
+  transition:border-color .15s,color .15s;flex-shrink:0;
+}
+.icon-btn:hover{border-color:var(--accent);color:var(--accent)}
+.mob-btn{display:none}
+
+/* ── SIDEBAR ─────────────────────────────────────────────── */
+.sidebar{
+  position:fixed;top:var(--top);left:0;width:var(--sw);
+  height:calc(100vh - var(--top));background:var(--bg2);
+  border-right:1px solid var(--border);overflow-y:auto;z-index:200;
+  transition:transform .22s cubic-bezier(.4,0,.2,1);
+}
+.sb-nav{padding:10px 0 32px}
+.nav-group{margin-bottom:2px}
+.nav-glabel{
+  font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--text3);font-family:var(--mono);padding:12px 16px 4px;
+}
+.nav-a{
+  display:flex;align-items:center;gap:9px;padding:5px 16px;color:var(--text2);
+  font-size:13px;text-decoration:none;cursor:pointer;border-left:2px solid transparent;
+  transition:color .12s,background .12s,border-color .12s;user-select:none;
+  border-radius:0 4px 4px 0;margin-right:6px;
+}
+.nav-a i{font-size:10px;width:13px;text-align:center;flex-shrink:0;opacity:.6}
+.nav-a:hover{color:var(--text);background:var(--bg3)}
+.nav-a.active{color:var(--accent);background:var(--accent-gl);border-left-color:var(--accent);font-weight:600}
+.nav-a.active i{opacity:1}
+.nav-pill{
+  margin-left:auto;font-family:var(--mono);font-size:8px;font-weight:700;
+  padding:1px 5px;border-radius:3px;background:var(--accent-gl);color:var(--accent);border:1px solid var(--accent-bd);
+}
+/* overlay for mobile */
+.sb-backdrop{display:none;position:fixed;inset:0;z-index:190;background:rgba(0,0,0,.5);backdrop-filter:blur(2px)}
+
+/* ── MAIN ─────────────────────────────────────────────────── */
+.main{margin-left:var(--sw);margin-top:var(--top);min-height:calc(100vh - var(--top))}
+.pane{display:none;padding:44px 52px 96px;max-width:860px}
+.pane.active{display:block;animation:fadeIn .16s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+
+/* ── PAGE HEADER ─────────────────────────────────────────── */
+.page-badge{
+  display:inline-flex;align-items:center;gap:6px;font-family:var(--mono);font-size:10px;
+  color:var(--accent);background:var(--accent-gl);border:1px solid var(--accent-bd);
+  padding:3px 10px;border-radius:3px;margin-bottom:14px;
+}
+.page-title{font-size:28px;font-weight:800;letter-spacing:-1px;line-height:1.1;margin-bottom:10px}
+.page-title span{color:var(--accent)}
+.page-sub{font-size:14px;color:var(--text2);max-width:520px;margin-bottom:32px;line-height:1.7}
+.divider{height:1px;background:var(--border);margin:28px 0}
+.section-label{
+  font-family:var(--mono);font-size:9px;font-weight:700;text-transform:uppercase;
+  letter-spacing:.12em;color:var(--text3);display:flex;align-items:center;gap:10px;margin-bottom:18px;
+}
+.section-label::after{content:'';flex:1;height:1px;background:var(--border)}
+
+/* ── STAT ROW ─────────────────────────────────────────────── */
+.stat-row{display:flex;gap:28px;flex-wrap:wrap;margin-bottom:8px}
+.stat{display:flex;flex-direction:column;gap:2px}
+.stat-lbl{font-family:var(--mono);font-size:9px;text-transform:uppercase;letter-spacing:.1em;color:var(--text3)}
+.stat-val{font-family:var(--mono);font-size:13px}
+.live{color:var(--green);display:flex;align-items:center;gap:5px}
+.dot{width:6px;height:6px;background:var(--green);border-radius:50%;animation:pulse 2s ease infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+
+/* ── CARDS ─────────────────────────────────────────────────── */
+.card-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:24px}
+.card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:16px;transition:border-color .14s}
+.card:hover{border-color:var(--border2)}
+.card i{font-size:13px;color:var(--accent);margin-bottom:10px;display:block}
+.card h3{font-size:13px;font-weight:600;margin-bottom:5px}
+.card p{font-size:12px;color:var(--text2);line-height:1.65}
+
+/* ── BASE BAR ──────────────────────────────────────────────── */
+.base-bar{display:flex;align-items:stretch;background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;font-family:var(--mono);font-size:12px;margin-bottom:20px}
+.base-lbl{padding:9px 13px;background:var(--bg3);border-right:1px solid var(--border);color:var(--text3);font-size:9px;text-transform:uppercase;letter-spacing:.08em;display:flex;align-items:center;white-space:nowrap}
+.base-val{padding:9px 14px;color:var(--accent);flex:1;word-break:break-all}
+
+/* ── STATUS LIST ───────────────────────────────────────────── */
+.slist{display:flex;flex-direction:column;gap:6px}
+.srow{display:flex;align-items:center;gap:12px;padding:9px 14px;border-radius:var(--r);font-size:12px;border:1px solid}
+.s2{background:var(--green-bg);border-color:var(--green-bd)}
+.s4{background:var(--amber-bg);border-color:var(--amber-bd)}
+.s5{background:var(--red-bg);border-color:var(--red-bd)}
+.scode{font-family:var(--mono);font-size:11px;font-weight:700;min-width:34px}
+.s2 .scode{color:var(--green)}.s4 .scode{color:var(--amber)}.s5 .scode{color:var(--red)}
+.sdesc{color:var(--text2)}
+
+/* ── ENDPOINT BLOCK — sempre aberto (Mintlify) ─────────────── */
+.ep-block{margin-bottom:36px}
+.ep-hdr{display:flex;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap;gap:8px}
+.meth{
+  font-family:var(--mono);font-size:10px;font-weight:700;padding:3px 10px;border-radius:4px;
+  text-align:center;letter-spacing:.04em;flex-shrink:0;
+  background:var(--accent-gl);color:var(--accent);border:1px solid var(--accent-bd);
+}
+.ep-path{font-family:var(--mono);font-size:14px;font-weight:600;word-break:break-all}
+.ep-path .p{color:var(--accent)}
+.ep-hint{font-size:12px;color:var(--text3);margin-left:auto}
+.ep-card{background:var(--bg2);border:1px solid var(--border);border-radius:10px;overflow:hidden}
+.ep-sec{padding:18px 20px;border-bottom:1px solid var(--border)}
+.ep-sec:last-child{border-bottom:none}
+.ep-sec-ttl{
+  font-family:var(--mono);font-size:9px;font-weight:700;text-transform:uppercase;
+  letter-spacing:.12em;color:var(--text3);margin-bottom:14px;
+  display:flex;align-items:center;gap:8px;
+}
+.ep-sec-ttl::after{content:'';flex:1;height:1px;background:var(--border)}
+.ep-2col{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+
+/* ── TABLE ─────────────────────────────────────────────────── */
+.tbl-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
+.ptbl{width:100%;border-collapse:collapse;font-size:12px;min-width:380px}
+.ptbl th{text-align:left;padding:6px 10px;color:var(--text3);font-weight:600;font-size:10px;border-bottom:1px solid var(--border);font-family:var(--mono);text-transform:uppercase;letter-spacing:.05em;white-space:nowrap}
+.ptbl td{padding:8px 10px;border-bottom:1px solid var(--border);vertical-align:top;color:var(--text2)}
+.ptbl tr:last-child td{border-bottom:none}
+.pn{font-family:var(--mono);font-size:11px;color:var(--text);white-space:nowrap}
+.pt{font-family:var(--mono);font-size:10px;color:var(--text3);background:var(--bg3);padding:2px 6px;border-radius:3px;white-space:nowrap}
+.pr{font-family:var(--mono);font-size:9px;color:var(--red);background:var(--red-bg);border:1px solid var(--red-bd);padding:2px 6px;border-radius:3px;white-space:nowrap}
+.po{font-family:var(--mono);font-size:9px;color:var(--text3);background:var(--bg4);border:1px solid var(--border2);padding:2px 6px;border-radius:3px;white-space:nowrap}
+
+/* ── CODE BOX ──────────────────────────────────────────────── */
+.cbox{background:var(--bg);border:1px solid var(--border);border-radius:var(--r);overflow:hidden}
+.cbox-hdr{display:flex;align-items:center;justify-content:space-between;padding:6px 12px;border-bottom:1px solid var(--border);background:var(--bg3)}
+.clang{font-family:var(--mono);font-size:9px;color:var(--text3);text-transform:uppercase;letter-spacing:.06em}
+.cpbtn{background:none;border:none;color:var(--text3);cursor:pointer;font-size:11px;display:flex;align-items:center;gap:4px;padding:2px 7px;border-radius:3px;font-family:var(--sans);transition:color .14s,background .14s}
+.cpbtn:hover{color:var(--text);background:var(--border2)}
+pre{padding:14px 16px;font-family:var(--mono);font-size:11px;line-height:1.75;overflow-x:auto;-webkit-overflow-scrolling:touch}
+.jk{color:#9d8fff}.js{color:#7ee8a2}.jn{color:#ffcb6b}.jb{color:#ff7b93}.jl{color:#5a5a7a}
+[data-theme="light"] .jk{color:#5b4fd4}[data-theme="light"] .js{color:#059669}[data-theme="light"] .jn{color:#d97706}[data-theme="light"] .jb{color:#db2777}[data-theme="light"] .jl{color:#a0a0c0}
+
+/* ── INLINE CODE & NOTES ───────────────────────────────────── */
+code{font-family:var(--mono);font-size:11px;color:var(--accent);background:var(--accent-gl);padding:1px 5px;border-radius:3px}
+.note{font-size:12px;color:var(--text3);line-height:1.65;margin-top:6px}
+
+/* ── TRY IT ────────────────────────────────────────────────── */
+.try-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px;align-items:stretch}
+.try-in{
+  flex:1;min-width:130px;background:var(--bg);border:1px solid var(--border);
+  border-radius:var(--r);padding:7px 11px;color:var(--text);font-family:var(--mono);
+  font-size:11.5px;outline:none;transition:border-color .15s;
+}
+.try-in:focus{border-color:var(--accent)}
+.try-in::placeholder{color:var(--text3)}
+.try-btn{
+  background:var(--accent);border:none;border-radius:var(--r);padding:7px 18px;
+  color:#fff;font-family:var(--sans);font-size:12px;font-weight:700;cursor:pointer;
+  display:flex;align-items:center;gap:6px;white-space:nowrap;
+  transition:background .14s,transform .1s;flex-shrink:0;
+}
+.try-btn i{font-size:10px}
+.try-btn:hover{background:var(--accent2)}
+.try-btn:active{transform:scale(.97)}
+.try-btn:disabled{opacity:.5;cursor:not-allowed}
+.try-res{display:none;margin-top:10px}
+.try-res.show{display:block}
+.try-meta{display:flex;align-items:center;gap:10px;margin-bottom:8px;font-family:var(--mono);font-size:10px;flex-wrap:wrap}
+.t-ok{color:var(--green)}.t-err{color:var(--red)}.t-ms{color:var(--text3)}
+.t-url{color:var(--text3);font-size:10px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:360px}
+
+/* ── MODAL ─────────────────────────────────────────────────── */
+.modal-overlay{position:fixed;inset:0;z-index:999;background:rgba(0,0,0,.6);backdrop-filter:blur(4px);display:none;align-items:flex-start;justify-content:center;padding:70px 16px 16px}
+.modal-overlay.open{display:flex;animation:mfade .15s ease}
+@keyframes mfade{from{opacity:0}to{opacity:1}}
+.modal{background:var(--bg2);border:1px solid var(--border2);border-radius:10px;width:100%;max-width:560px;box-shadow:0 16px 48px rgba(0,0,0,.5);overflow:hidden;animation:mslide .18s ease}
+@keyframes mslide{from{transform:translateY(-12px)}to{transform:translateY(0)}}
+.modal-search{display:flex;align-items:center;gap:10px;padding:14px 16px;border-bottom:1px solid var(--border)}
+.modal-search i{color:var(--text3);font-size:14px;flex-shrink:0}
+.modal-search input{flex:1;min-width:0;background:none;border:none;outline:none;color:var(--text);font-family:var(--mono);font-size:14px}
+.modal-search input::placeholder{color:var(--text3)}
+.modal-esc{font-family:var(--mono);font-size:9px;color:var(--text3);background:var(--bg3);border:1px solid var(--border2);padding:3px 7px;border-radius:4px;cursor:pointer;flex-shrink:0}
+.modal-results{max-height:360px;overflow-y:auto}
+.modal-group-lbl{font-family:var(--mono);font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--text3);padding:10px 16px 4px}
+.modal-item{display:flex;align-items:center;gap:12px;padding:9px 16px;cursor:pointer;transition:background .12s;border-left:2px solid transparent}
+.modal-item:hover,.modal-item.focused{background:var(--bg3);border-left-color:var(--accent)}
+.modal-item i{font-size:10px;color:var(--text3);width:14px;text-align:center;flex-shrink:0}
+.modal-item-name{font-size:13px;flex:1}
+.modal-item-sub{font-family:var(--mono);font-size:10px;color:var(--text3);white-space:nowrap}
+.modal-item-pill{font-family:var(--mono);font-size:8.5px;font-weight:700;padding:2px 6px;border-radius:3px;background:var(--accent-gl);color:var(--accent);border:1px solid var(--accent-bd)}
+.modal-empty{padding:32px 16px;text-align:center;color:var(--text3);font-size:13px;font-family:var(--mono)}
+.modal-footer{border-top:1px solid var(--border);padding:8px 16px;display:flex;gap:12px;flex-wrap:wrap}
+.modal-hint{display:flex;align-items:center;gap:5px;font-family:var(--mono);font-size:9px;color:var(--text3)}
+.modal-hint kbd{background:var(--bg3);border:1px solid var(--border2);padding:2px 5px;border-radius:3px;font-family:var(--mono);font-size:9px}
+
+/* ═══════════════════════════════════════════════════════
+   RESPONSIVE BREAKPOINTS
+═══════════════════════════════════════════════════════ */
+/* Tablet */
+@media(max-width:900px){
+  .card-grid{grid-template-columns:1fr 1fr}
+  .ep-2col{grid-template-columns:1fr}
+  .ep-hint{display:none}
+}
+/* Mobile */
+@media(max-width:680px){
+  :root{--sw:280px}
+
+  /* topbar: hide logo border + ver + tags + kbd, show hamburger */
+  .tb-logo{width:auto;border-right:none;padding:0 12px}
+  .tb-ver{display:none}
+  .tb-tags{display:none}
+  .tb-kbd{display:none}
+  .mob-btn{display:grid}
+
+  /* sidebar slides in from left */
+  .sidebar{transform:translateX(calc(-1 * var(--sw)))}
+  .sidebar.open{transform:translateX(0)}
+  .sb-backdrop.open{display:block}
+
+  /* main takes full width */
+  .main{margin-left:0}
+  .pane{padding:22px 16px 72px}
+
+  .page-title{font-size:22px}
+  .card-grid{grid-template-columns:1fr}
+
+  /* try-it goes vertical */
+  .try-row{flex-direction:column}
+  .try-in{width:100%;min-width:unset}
+  .try-btn{width:100%;justify-content:center}
+
+  .stat-row{gap:16px}
+  .t-url{max-width:180px}
+}
+@media(max-width:420px){
+  .pane{padding:16px 12px 64px}
+  .ep-sec{padding:14px 14px}
+  .tb-search span{display:none}
+}
+</style>
+</head>
+<body>
+<div style="
+position: fixed;
+inset: 0;
+z-index: -1;
+background-image: radial-gradient(rgba(0,140,255,0.18) 1px, transparent 1px);
+background-size: 20px 20px;
+pointer-events: none;
+"></div>
+<!-- ═══════════════════════════ TOPBAR ═══════════════════════════ -->
+<header class="topbar">
+  <div class="tb-logo">
+    <div class="tb-mark">A</div>
+    <span class="tb-name">Anify</span>
+    <span class="tb-ver">v2.1</span>
+  </div>
+  <div class="tb-baseurl">
+    <span class="tb-baseurl-lbl">Base URL</span>
+    <input class="tb-baseurl-input" id="baseUrlInput" type="text" value="http://localhost:3000" spellcheck="false" autocomplete="off" oninput="updateBase(this.value)" />
+    <button class="tb-baseurl-reset" onclick="resetBase()" title="Reset to localhost">
+      <i class="fa-solid fa-arrow-rotate-left"></i>
+    </button>
+  </div>
+  <div class="tb-search" onclick="openModal()">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span>Search docs...</span>
+    <div class="tb-kbd"><span class="kbd">Ctrl</span><span class="kbd">K</span></div>
+  </div>
+  <div class="tb-right">
+    <div class="tb-tags"><span class="tb-tag">REST</span><span class="tb-tag">JSON</span></div>
+    <button class="icon-btn" onclick="toggleTheme()" title="Toggle theme"><i id="themeIco" class="fa-solid fa-sun"></i></button>
+    <button class="icon-btn mob-btn" onclick="openSidebar()" title="Menu"><i class="fa-solid fa-bars"></i></button>
+  </div>
+</header>
+
+<!-- ═══════════════════════════ SIDEBAR ══════════════════════════ -->
+<div class="sb-backdrop" id="sbBackdrop" onclick="closeSidebar()"></div>
+<aside class="sidebar" id="sidebar">
+  <nav class="sb-nav">
+    <div class="nav-group">
+      <div class="nav-glabel">Overview</div>
+      <a class="nav-a" data-page="intro"><i class="fa-solid fa-circle-dot"></i> Introduction</a>
+      <a class="nav-a" data-page="auth"><i class="fa-solid fa-unlock"></i> Authentication</a>
+      <a class="nav-a" data-page="errors"><i class="fa-solid fa-triangle-exclamation"></i> Errors</a>
+      <a class="nav-a" data-page="sources-page"><i class="fa-solid fa-plug"></i> Sources</a>
+    </div>
+    <div class="nav-group">
+      <div class="nav-glabel">Animes</div>
+      <a class="nav-a" data-page="list-animes"><i class="fa-solid fa-list"></i> List Animes <span class="nav-pill">GET</span></a>
+      <a class="nav-a" data-page="get-anime"><i class="fa-solid fa-circle-info"></i> Get Anime <span class="nav-pill">GET</span></a>
+    </div>
+    <div class="nav-group">
+      <div class="nav-glabel">Episodes</div>
+      <a class="nav-a" data-page="get-episode"><i class="fa-solid fa-play"></i> Get Episode <span class="nav-pill">GET</span></a>
+      <a class="nav-a" data-page="recentes"><i class="fa-solid fa-clock-rotate-left"></i> Recent Episodes <span class="nav-pill">GET</span></a>
+    </div>
+    <div class="nav-group">
+      <div class="nav-glabel">Discovery</div>
+      <a class="nav-a" data-page="search"><i class="fa-solid fa-magnifying-glass"></i> Search <span class="nav-pill">GET</span></a>
+      <a class="nav-a" data-page="list-genres"><i class="fa-solid fa-tags"></i> List Genres <span class="nav-pill">GET</span></a>
+      <a class="nav-a" data-page="genre-animes"><i class="fa-solid fa-tag"></i> Genre Animes <span class="nav-pill">GET</span></a>
+    </div>
+  </nav>
+</aside>
+
+<!-- ═══════════════════════════ MAIN ════════════════════════════ -->
+<div class="main">
+
+<!-- ──── INTRO ──── -->
+<div class="pane" id="pane-intro">
+  <div class="page-badge"><i class="fa-solid fa-bolt"></i> REST API</div>
+  <h1 class="page-title"><span>Anify</span> API Reference</h1>
+  <p class="page-sub">A fast, cached, multi-source REST API for anime metadata and episode players. No authentication required.</p>
+  <div class="stat-row">
+    <div class="stat"><span class="stat-lbl">Base URL</span><span class="stat-val" id="stat-base">http://localhost:3000</span></div>
+    <div class="stat"><span class="stat-lbl">Version</span><span class="stat-val">2.0.0</span></div>
+    <div class="stat"><span class="stat-lbl">Format</span><span class="stat-val">JSON</span></div>
+    <div class="stat"><span class="stat-lbl">Status</span><span class="stat-val live"><span class="dot"></span>Live</span></div>
+  </div>
+  <div class="divider"></div>
+  <div class="section-label">Getting Started</div>
+  <div class="base-bar"><span class="base-lbl">Base URL</span><span class="base-val" id="basebar-val">http://localhost:3000</span></div>
+  <div class="card-grid">
+    <div class="card"><i class="fa-solid fa-gauge-high"></i><h3>10-min Cache</h3><p>All responses cached in-memory. Every response includes a <code>cached</code> boolean field.</p></div>
+    <div class="card"><i class="fa-solid fa-plug"></i><h3>Multi-source</h3><p>Switch providers with <code>?source=id</code>. New sources need zero route changes.</p></div>
+    <div class="card"><i class="fa-solid fa-filter"></i><h3>Filters</h3><p>Filter listings by <code>genres</code> and <code>mode</code> (AND/OR). All combinable.</p></div>
+  </div>
+</div>
+
+<!-- ──── AUTH ──── -->
+<div class="pane" id="pane-auth">
+  <div class="page-badge"><i class="fa-solid fa-unlock"></i> Authentication</div>
+  <h1 class="page-title">Authentication</h1>
+  <p class="page-sub">This API requires no authentication. All endpoints are publicly accessible with plain GET requests.</p>
+  <div class="card" style="max-width:420px">
+    <i class="fa-solid fa-circle-check" style="color:var(--green)"></i>
+    <h3>No credentials needed</h3>
+    <p>No headers, tokens, or API keys required.</p>
+  </div>
+</div>
+
+<!-- ──── ERRORS ──── -->
+<div class="pane" id="pane-errors">
+  <div class="page-badge"><i class="fa-solid fa-triangle-exclamation"></i> Errors</div>
+  <h1 class="page-title">Error Handling</h1>
+  <p class="page-sub">All errors return a consistent JSON envelope with a single <code>error</code> field.</p>
+  <div class="cbox" style="max-width:260px;margin-bottom:28px">
+    <div class="cbox-hdr"><span class="clang">JSON</span></div>
+    <pre>{ <span class="jk">"error"</span>: <span class="js">"Not found"</span> }</pre>
+  </div>
+  <div class="section-label">Status Codes</div>
+  <div class="slist">
+    <div class="srow s2"><span class="scode">200</span><span class="sdesc">OK — request processed successfully</span></div>
+    <div class="srow s4"><span class="scode">400</span><span class="sdesc">Bad Request — missing or invalid parameters</span></div>
+    <div class="srow s4"><span class="scode">404</span><span class="sdesc">Not Found — resource does not exist upstream</span></div>
+    <div class="srow s5"><span class="scode">500</span><span class="sdesc">Server Error — upstream fetch or parse failure</span></div>
+  </div>
+</div>
+
+<!-- ──── SOURCES ──── -->
+<div class="pane" id="pane-sources-page">
+  <div class="page-badge"><i class="fa-solid fa-plug"></i> Multi-source</div>
+  <h1 class="page-title">Sources</h1>
+  <p class="page-sub">Every endpoint accepts <code>?source=id</code> to select which provider to use. Omit it to use the default source.</p>
+
+  <div class="ep-block">
+    <div class="ep-hdr">
+      <span class="meth">GET</span>
+      <span class="ep-path">/sources</span>
+      <span class="ep-hint">List all available sources</span>
+    </div>
+    <div class="ep-card">
+      <div class="ep-sec">
+        <div class="ep-sec-ttl">Response Example</div>
+        <div class="cbox"><div class="cbox-hdr"><span class="clang">JSON</span><button class="cpbtn" onclick="cp(this)"><i class="fa-regular fa-copy"></i> Copy</button></div>
+<pre>{
+  <span class="jk">"sources"</span>: [
+    { <span class="jk">"id"</span>: <span class="js">"animesonlinecc"</span>, <span class="jk">"name"</span>: <span class="js">"Animes Online CC"</span> }
+  ]
+}</pre></div>
+      </div>
+      <div class="ep-sec">
+        <div class="ep-sec-ttl">Try it</div>
+        <div class="try-row">
+          <button class="try-btn" onclick="req('sc')"><i class="fa-solid fa-paper-plane"></i> Send</button>
+        </div>
+        <div class="try-res" id="r-sc">
+          <div class="try-meta"><span id="st-sc"></span><span id="ms-sc" class="t-ms"></span><span id="ur-sc" class="t-url"></span></div>
+          <div class="cbox"><div class="cbox-hdr"><span class="clang">Response</span><button class="cpbtn" onclick="cp(this)"><i class="fa-regular fa-copy"></i> Copy</button></div><pre id="pre-sc" style="max-height:260px;overflow-y:auto"></pre></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ──── LIST ANIMES ──── -->
+<div class="pane" id="pane-list-animes">
+  <div class="page-badge"><i class="fa-solid fa-list"></i> GET /animes</div>
+  <h1 class="page-title">List Animes</h1>
+  <p class="page-sub">Paginated list of animes. Filter by genre, or switch source.</p>
+
+  <div class="ep-block">
+    <div class="ep-hdr">
+      <span class="meth">GET</span>
+      <span class="ep-path">/animes</span>
+      <span class="ep-hint">Paginated listing with filters</span>
+    </div>
+    <div class="ep-card">
+      <div class="ep-sec">
+        <div class="ep-sec-ttl">Query Parameters</div>
+        <div class="tbl-scroll"><table class="ptbl"><thead><tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th></tr></thead><tbody>
+          <tr><td><span class="pn">page</span></td><td><span class="pt">integer</span></td><td><span class="po">optional</span></td><td>Page number. Default: <code>1</code></td></tr>
+          <tr><td><span class="pn">genres</span></td><td><span class="pt">string</span></td><td><span class="po">optional</span></td><td>Comma-separated genre slugs. E.g. <code>acao,seinen</code>. Max 5.</td></tr>
+          <tr><td><span class="pn">mode</span></td><td><span class="pt">string</span></td><td><span class="po">optional</span></td><td><code>AND</code> (default) — all genres. <code>OR</code> — any genre.</td></tr>
+          <tr><td><span class="pn">source</span></td><td><span class="pt">string</span></td><td><span class="po">optional</span></td><td>Source id. Default: <code>animesonlinecc</code></td></tr>
+        </tbody></table></div>
+      </div>
+      <div class="ep-sec">
+        <div class="ep-sec-ttl">Response</div>
+        <div class="ep-2col">
+          <div class="tbl-scroll"><table class="ptbl"><thead><tr><th>Field</th><th>Type</th><th>Description</th></tr></thead><tbody>
+            <tr><td><span class="pn">source</span></td><td><span class="pt">string</span></td><td>Active source id</td></tr>
+            <tr><td><span class="pn">cached</span></td><td><span class="pt">boolean</span></td><td>Served from cache</td></tr>
+            <tr><td><span class="pn">page</span></td><td><span class="pt">integer</span></td><td>Current page</td></tr>
+            <tr><td><span class="pn">totalPages</span></td><td><span class="pt">integer</span></td><td>Total pages</td></tr>
+            <tr><td><span class="pn">count</span></td><td><span class="pt">integer</span></td><td>Items on this page</td></tr>
+            <tr><td><span class="pn">animes[].slug</span></td><td><span class="pt">string</span></td><td>Unique identifier</td></tr>
+            <tr><td><span class="pn">animes[].title</span></td><td><span class="pt">string?</span></td><td>Title (when available)</td></tr>
+            <tr><td><span class="pn">animes[].cover</span></td><td><span class="pt">string?</span></td><td>Cover image URL</td></tr>
+          </tbody></table></div>
+          <div class="cbox"><div class="cbox-hdr"><span class="clang">JSON</span><button class="cpbtn" onclick="cp(this)"><i class="fa-regular fa-copy"></i> Copy</button></div>
+<pre>{
+  <span class="jk">"source"</span>: <span class="js">"animesonlinecc"</span>,
+  <span class="jk">"cached"</span>: <span class="jb">false</span>,
+  <span class="jk">"page"</span>: <span class="jn">1</span>,
+  <span class="jk">"totalPages"</span>: <span class="jn">24</span>,
+  <span class="jk">"count"</span>: <span class="jn">8</span>,
+  <span class="jk">"animes"</span>: [{
+    <span class="jk">"slug"</span>: <span class="js">"vinland-saga"</span>,
+    <span class="jk">"title"</span>: <span class="js">"Vinland Saga"</span>,
+    <span class="jk">"cover"</span>: <span class="js ex-base-url">"http://localhost:3000/img/..."</span>,
+  }]
+}</pre></div>
+        </div>
+      </div>
+      <div class="ep-sec">
+        <div class="ep-sec-ttl">Try it</div>
+        <div class="try-row">
+          <input class="try-in" id="la-page"   placeholder="page"   style="max-width:80px"/>
+          <input class="try-in" id="la-genres" placeholder="genres (e.g. acao,seinen)"/>
+          <input class="try-in" id="la-mode"   placeholder="AND / OR" style="max-width:90px"/>
+          <button class="try-btn" onclick="req('la')"><i class="fa-solid fa-paper-plane"></i> Send</button>
+        </div>
+        <div class="try-res" id="r-la">
+          <div class="try-meta"><span id="st-la"></span><span id="ms-la" class="t-ms"></span><span id="ur-la" class="t-url"></span></div>
+          <div class="cbox"><div class="cbox-hdr"><span class="clang">Response</span><button class="cpbtn" onclick="cp(this)"><i class="fa-regular fa-copy"></i> Copy</button></div><pre id="pre-la" style="max-height:300px;overflow-y:auto"></pre></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ──── GET ANIME ──── -->
+<div class="pane" id="pane-get-anime">
+  <div class="page-badge"><i class="fa-solid fa-circle-info"></i> GET /animes/:slug</div>
+  <h1 class="page-title">Get Anime</h1>
+  <p class="page-sub">Full anime details including genres, seasons and all episodes.</p>
+
+  <div class="ep-block">
+    <div class="ep-hdr">
+      <span class="meth">GET</span>
+      <span class="ep-path">/animes/<span class="p">:slug</span></span>
+      <span class="ep-hint">Details + seasons + episodes</span>
+    </div>
+    <div class="ep-card">
+      <div class="ep-sec">
+        <div class="ep-sec-ttl">Parameters</div>
+        <div class="tbl-scroll"><table class="ptbl"><thead><tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th></tr></thead><tbody>
+          <tr><td><span class="pn">slug</span></td><td><span class="pt">string</span></td><td><span class="pr">path</span></td><td>Anime slug (e.g. <code>darwin-jihen</code>)</td></tr>
+          <tr><td><span class="pn">source</span></td><td><span class="pt">string</span></td><td><span class="po">optional</span></td><td>Source id</td></tr>
+        </tbody></table></div>
+      </div>
+      <div class="ep-sec">
+        <div class="ep-sec-ttl">Response</div>
+        <div class="ep-2col">
+          <div class="tbl-scroll"><table class="ptbl"><thead><tr><th>Field</th><th>Type</th><th>Description</th></tr></thead><tbody>
+            <tr><td><span class="pn">slug</span></td><td><span class="pt">string</span></td><td>Identifier</td></tr>
+            <tr><td><span class="pn">title</span></td><td><span class="pt">string</span></td><td>Title</td></tr>
+            <tr><td><span class="pn">image</span></td><td><span class="pt">string</span></td><td>Cover image URL</td></tr>
+            <tr><td><span class="pn">description</span></td><td><span class="pt">string</span></td><td>Synopsis</td></tr>
+            <tr><td><span class="pn">year</span></td><td><span class="pt">integer|null</span></td><td>Release year</td></tr>
+            <tr><td><span class="pn">genres[]</span></td><td><span class="pt">array</span></td><td>{slug, name} per genre</td></tr>
+            <tr><td><span class="pn">seasonCount</span></td><td><span class="pt">integer</span></td><td>Number of seasons</td></tr>
+            <tr><td><span class="pn">episodeCount</span></td><td><span class="pt">integer</span></td><td>Total episodes</td></tr>
+            <tr><td><span class="pn">seasons[].name</span></td><td><span class="pt">string</span></td><td>Season label</td></tr>
+            <tr><td><span class="pn">seasons[].episodes[]</span></td><td><span class="pt">array</span></td><td>{slug, number, url}</td></tr>
+          </tbody></table></div>
+          <div class="cbox"><div class="cbox-hdr"><span class="clang">JSON</span><button class="cpbtn" onclick="cp(this)"><i class="fa-regular fa-copy"></i> Copy</button></div>
+<pre>{
+  <span class="jk">"slug"</span>: <span class="js">"darwin-jihen"</span>,
+  <span class="jk">"title"</span>: <span class="js">"Darwin Jihen"</span>,
+  <span class="jk">"year"</span>: <span class="jn">2023</span>,
+  <span class="jk">"genres"</span>: [
+    { <span class="jk">"slug"</span>: <span class="js">"acao"</span>, <span class="jk">"name"</span>: <span class="js">"Ação"</span> }
+  ],
+  <span class="jk">"seasonCount"</span>: <span class="jn">1</span>,
+  <span class="jk">"episodeCount"</span>: <span class="jn">11</span>,
+  <span class="jk">"seasons"</span>: [<span class="jl">...</span>]
+}</pre></div>
+        </div>
+      </div>
+      <div class="ep-sec">
+        <div class="ep-sec-ttl">Try it</div>
+        <div class="try-row">
+          <input class="try-in" id="ga-slug" placeholder="slug (e.g. darwin-jihen)"/>
+          <button class="try-btn" onclick="req('ga')"><i class="fa-solid fa-paper-plane"></i> Send</button>
+        </div>
+        <div class="try-res" id="r-ga">
+          <div class="try-meta"><span id="st-ga"></span><span id="ms-ga" class="t-ms"></span><span id="ur-ga" class="t-url"></span></div>
+          <div class="cbox"><div class="cbox-hdr"><span class="clang">Response</span><button class="cpbtn" onclick="cp(this)"><i class="fa-regular fa-copy"></i> Copy</button></div><pre id="pre-ga" style="max-height:300px;overflow-y:auto"></pre></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ──── GET EPISODE ──── -->
+<div class="pane" id="pane-get-episode">
+  <div class="page-badge"><i class="fa-solid fa-play"></i> GET /episodios/:slug</div>
+  <h1 class="page-title">Get Episode</h1>
+  <p class="page-sub">Episode details including all available video players and prev/next navigation.</p>
+
+  <div class="ep-block">
+    <div class="ep-hdr">
+      <span class="meth">GET</span>
+      <span class="ep-path">/episodios/<span class="p">:slug</span></span>
+      <span class="ep-hint">Episode + players</span>
+    </div>
+    <div class="ep-card">
+      <div class="ep-sec">
+        <div class="ep-sec-ttl">Parameters</div>
+        <div class="tbl-scroll"><table class="ptbl"><thead><tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th></tr></thead><tbody>
+          <tr><td><span class="pn">slug</span></td><td><span class="pt">string</span></td><td><span class="pr">path</span></td><td>Episode slug (e.g. <code>darwin-jihen-episodio-1</code>)</td></tr>
+          <tr><td><span class="pn">source</span></td><td><span class="pt">string</span></td><td><span class="po">optional</span></td><td>Source id</td></tr>
+        </tbody></table></div>
+      </div>
+      <div class="ep-sec">
+        <div class="ep-sec-ttl">Response Example</div>
+        <div class="cbox"><div class="cbox-hdr"><span class="clang">JSON</span><button class="cpbtn" onclick="cp(this)"><i class="fa-regular fa-copy"></i> Copy</button></div>
+<pre>{
+  <span class="jk">"slug"</span>: <span class="js">"darwin-jihen-episodio-1"</span>,
+  <span class="jk">"epNumber"</span>: <span class="jn">1</span>,
+  <span class="jk">"animeName"</span>: <span class="js">"Darwin Jihen"</span>,
+  <span class="jk">"players"</span>: [
+    { <span class="jk">"type"</span>: <span class="js">"blogger"</span>, <span class="jk">"src"</span>: <span class="js">"https://..."</span> }
+  ],
+  <span class="jk">"prev"</span>: <span class="jl">null</span>,
+  <span class="jk">"next"</span>: <span class="js ex-base-url">"http://localhost:3000/episodios/..."</span>
+}</pre></div>
+      </div>
+      <div class="ep-sec">
+        <div class="ep-sec-ttl">Try it</div>
+        <div class="try-row">
+          <input class="try-in" id="ge-slug" placeholder="slug (e.g. darwin-jihen-episodio-1)"/>
+          <button class="try-btn" onclick="req('ge')"><i class="fa-solid fa-paper-plane"></i> Send</button>
+        </div>
+        <div class="try-res" id="r-ge">
+          <div class="try-meta"><span id="st-ge"></span><span id="ms-ge" class="t-ms"></span><span id="ur-ge" class="t-url"></span></div>
+          <div class="cbox"><div class="cbox-hdr"><span class="clang">Response</span><button class="cpbtn" onclick="cp(this)"><i class="fa-regular fa-copy"></i> Copy</button></div><pre id="pre-ge" style="max-height:300px;overflow-y:auto"></pre></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ──── RECENTES ──── -->
+<div class="pane" id="pane-recentes">
+  <div class="page-badge"><i class="fa-solid fa-clock-rotate-left"></i> GET /recentes</div>
+  <h1 class="page-title">Recent Episodes</h1>
+  <p class="page-sub">Most recently added episodes across all animes, paginated.</p>
+
+  <div class="ep-block">
+    <div class="ep-hdr">
+      <span class="meth">GET</span>
+      <span class="ep-path">/recentes</span>
+      <span class="ep-hint">Recent episodes paginated</span>
+    </div>
+    <div class="ep-card">
+      <div class="ep-sec">
+        <div class="ep-sec-ttl">Query Parameters</div>
+        <div class="tbl-scroll"><table class="ptbl"><thead><tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th></tr></thead><tbody>
+          <tr><td><span class="pn">page</span></td><td><span class="pt">integer</span></td><td><span class="po">optional</span></td><td>Page number. Default: <code>1</code></td></tr>
+          <tr><td><span class="pn">source</span></td><td><span class="pt">string</span></td><td><span class="po">optional</span></td><td>Source id</td></tr>
+        </tbody></table></div>
+      </div>
+      <div class="ep-sec">
+        <div class="ep-sec-ttl">Response Example</div>
+        <div class="cbox"><div class="cbox-hdr"><span class="clang">JSON</span><button class="cpbtn" onclick="cp(this)"><i class="fa-regular fa-copy"></i> Copy</button></div>
+<pre>{
+  <span class="jk">"page"</span>: <span class="jn">1</span>,
+  <span class="jk">"count"</span>: <span class="jn">12</span>,
+  <span class="jk">"episodes"</span>: [{
+    <span class="jk">"slug"</span>: <span class="js">"darwin-jihen-episodio-9"</span>,
+    <span class="jk">"epNumber"</span>: <span class="jn">9</span>,
+    <span class="jk">"url"</span>: <span class="js ex-base-url">"http://localhost:3000/episodios/..."</span>
+  }]
+}</pre></div>
+      </div>
+      <div class="ep-sec">
+        <div class="ep-sec-ttl">Try it</div>
+        <div class="try-row">
+          <input class="try-in" id="re-page" placeholder="page" style="max-width:100px"/>
+          <button class="try-btn" onclick="req('re')"><i class="fa-solid fa-paper-plane"></i> Send</button>
+        </div>
+        <div class="try-res" id="r-re">
+          <div class="try-meta"><span id="st-re"></span><span id="ms-re" class="t-ms"></span><span id="ur-re" class="t-url"></span></div>
+          <div class="cbox"><div class="cbox-hdr"><span class="clang">Response</span><button class="cpbtn" onclick="cp(this)"><i class="fa-regular fa-copy"></i> Copy</button></div><pre id="pre-re" style="max-height:300px;overflow-y:auto"></pre></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ──── SEARCH ──── -->
+<div class="pane" id="pane-search">
+  <div class="page-badge"><i class="fa-solid fa-magnifying-glass"></i> GET /busca</div>
+  <h1 class="page-title">Search</h1>
+  <p class="page-sub">Search animes by name, optionally narrowed by genre filter.</p>
+
+  <div class="ep-block">
+    <div class="ep-hdr">
+      <span class="meth">GET</span>
+      <span class="ep-path">/busca</span>
+      <span class="ep-hint">Textual search with optional genre filter</span>
+    </div>
+    <div class="ep-card">
+      <div class="ep-sec">
+        <div class="ep-sec-ttl">Query Parameters</div>
+        <div class="tbl-scroll"><table class="ptbl"><thead><tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th></tr></thead><tbody>
+          <tr><td><span class="pn">q</span></td><td><span class="pt">string</span></td><td><span class="pr">required</span></td><td>Search term, min. 2 characters</td></tr>
+          <tr><td><span class="pn">genres</span></td><td><span class="pt">string</span></td><td><span class="po">optional</span></td><td>Comma-separated genre slugs to filter results</td></tr>
+          <tr><td><span class="pn">mode</span></td><td><span class="pt">string</span></td><td><span class="po">optional</span></td><td><code>AND</code> or <code>OR</code>. Default: <code>AND</code></td></tr>
+          <tr><td><span class="pn">source</span></td><td><span class="pt">string</span></td><td><span class="po">optional</span></td><td>Source id</td></tr>
+        </tbody></table></div>
+      </div>
+      <div class="ep-sec">
+        <div class="ep-sec-ttl">Response Example</div>
+        <div class="cbox"><div class="cbox-hdr"><span class="clang">JSON</span><button class="cpbtn" onclick="cp(this)"><i class="fa-regular fa-copy"></i> Copy</button></div>
+<pre>{
+  <span class="jk">"query"</span>: <span class="js">"naruto"</span>,
+  <span class="jk">"animes"</span>: [{
+    <span class="jk">"slug"</span>: <span class="js">"naruto-classico"</span>,
+    <span class="jk">"title"</span>: <span class="js">"Naruto Clássico"</span>,
+    <span class="jk">"cover"</span>: <span class="js ex-base-url">"http://localhost:3000/img/..."</span>,
+    <span class="jk">"year"</span>: <span class="jn">2002</span>
+  }],
+  <span class="jk">"episodes"</span>: []
+}</pre></div>
+      </div>
+      <div class="ep-sec">
+        <div class="ep-sec-ttl">Try it</div>
+        <div class="try-row">
+          <input class="try-in" id="sr-q"      placeholder="Search term (e.g. naruto)"/>
+          <input class="try-in" id="sr-genres" placeholder="genres" style="max-width:160px"/>
+          <input class="try-in" id="sr-mode"   placeholder="AND / OR" style="max-width:90px"/>
+          <button class="try-btn" onclick="req('sr')"><i class="fa-solid fa-paper-plane"></i> Send</button>
+        </div>
+        <div class="try-res" id="r-sr">
+          <div class="try-meta"><span id="st-sr"></span><span id="ms-sr" class="t-ms"></span><span id="ur-sr" class="t-url"></span></div>
+          <div class="cbox"><div class="cbox-hdr"><span class="clang">Response</span><button class="cpbtn" onclick="cp(this)"><i class="fa-regular fa-copy"></i> Copy</button></div><pre id="pre-sr" style="max-height:300px;overflow-y:auto"></pre></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ──── LIST GENRES ──── -->
+<div class="pane" id="pane-list-genres">
+  <div class="page-badge"><i class="fa-solid fa-tags"></i> GET /generos</div>
+  <h1 class="page-title">List Genres</h1>
+  <p class="page-sub">Returns all available genres with their slugs for use in filters.</p>
+
+  <div class="ep-block">
+    <div class="ep-hdr"><span class="meth">GET</span><span class="ep-path">/generos</span></div>
+    <div class="ep-card">
+      <div class="ep-sec">
+        <div class="ep-sec-ttl">Response Example</div>
+        <div class="cbox"><div class="cbox-hdr"><span class="clang">JSON</span><button class="cpbtn" onclick="cp(this)"><i class="fa-regular fa-copy"></i> Copy</button></div>
+<pre>{
+  <span class="jk">"count"</span>: <span class="jn">38</span>,
+  <span class="jk">"generos"</span>: [
+    { <span class="jk">"slug"</span>: <span class="js">"acao"</span>, <span class="jk">"name"</span>: <span class="js">"Ação"</span> },
+    { <span class="jk">"slug"</span>: <span class="js">"seinen"</span>, <span class="jk">"name"</span>: <span class="js">"Seinen"</span> }
+  ]
+}</pre></div>
+      </div>
+      <div class="ep-sec">
+        <div class="ep-sec-ttl">Try it</div>
+        <div class="try-row">
+          <button class="try-btn" onclick="req('gn')"><i class="fa-solid fa-paper-plane"></i> Send</button>
+        </div>
+        <div class="try-res" id="r-gn">
+          <div class="try-meta"><span id="st-gn"></span><span id="ms-gn" class="t-ms"></span><span id="ur-gn" class="t-url"></span></div>
+          <div class="cbox"><div class="cbox-hdr"><span class="clang">Response</span><button class="cpbtn" onclick="cp(this)"><i class="fa-regular fa-copy"></i> Copy</button></div><pre id="pre-gn" style="max-height:300px;overflow-y:auto"></pre></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ──── GENRE ANIMES ──── -->
+<div class="pane" id="pane-genre-animes">
+  <div class="page-badge"><i class="fa-solid fa-tag"></i> GET /generos/:slug</div>
+  <h1 class="page-title">Genre Animes</h1>
+  <p class="page-sub">Paginated list of animes for a specific genre slug.</p>
+
+  <div class="ep-block">
+    <div class="ep-hdr">
+      <span class="meth">GET</span>
+      <span class="ep-path">/generos/<span class="p">:slug</span></span>
+      <span class="ep-hint">Animes by genre, paginated</span>
+    </div>
+    <div class="ep-card">
+      <div class="ep-sec">
+        <div class="ep-sec-ttl">Parameters</div>
+        <div class="tbl-scroll"><table class="ptbl"><thead><tr><th>Name</th><th>Type</th><th>Required</th><th>Description</th></tr></thead><tbody>
+          <tr><td><span class="pn">slug</span></td><td><span class="pt">string</span></td><td><span class="pr">path</span></td><td>Genre slug (e.g. <code>acao</code>, <code>seinen</code>)</td></tr>
+          <tr><td><span class="pn">page</span></td><td><span class="pt">integer</span></td><td><span class="po">optional</span></td><td>Page number. Default: <code>1</code></td></tr>
+          <tr><td><span class="pn">source</span></td><td><span class="pt">string</span></td><td><span class="po">optional</span></td><td>Source id</td></tr>
+        </tbody></table></div>
+      </div>
+      <div class="ep-sec">
+        <div class="ep-sec-ttl">Response Example</div>
+        <div class="cbox"><div class="cbox-hdr"><span class="clang">JSON</span><button class="cpbtn" onclick="cp(this)"><i class="fa-regular fa-copy"></i> Copy</button></div>
+<pre>{
+  <span class="jk">"genre"</span>: <span class="js">"seinen"</span>,
+  <span class="jk">"page"</span>: <span class="jn">1</span>,
+  <span class="jk">"totalPages"</span>: <span class="jn">3</span>,
+  <span class="jk">"count"</span>: <span class="jn">20</span>,
+  <span class="jk">"animes"</span>: [<span class="jl">...</span>]
+}</pre></div>
+      </div>
+      <div class="ep-sec">
+        <div class="ep-sec-ttl">Try it</div>
+        <div class="try-row">
+          <input class="try-in" id="gg-slug" placeholder="genre slug (e.g. seinen)"/>
+          <input class="try-in" id="gg-page" placeholder="page" style="max-width:80px"/>
+          <button class="try-btn" onclick="req('gg')"><i class="fa-solid fa-paper-plane"></i> Send</button>
+        </div>
+        <div class="try-res" id="r-gg">
+          <div class="try-meta"><span id="st-gg"></span><span id="ms-gg" class="t-ms"></span><span id="ur-gg" class="t-url"></span></div>
+          <div class="cbox"><div class="cbox-hdr"><span class="clang">Response</span><button class="cpbtn" onclick="cp(this)"><i class="fa-regular fa-copy"></i> Copy</button></div><pre id="pre-gg" style="max-height:300px;overflow-y:auto"></pre></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div><!-- /main -->
+
+<!-- ═══════════════════════════ MODAL ════════════════════════════ -->
+<div class="modal-overlay" id="modalOverlay" onclick="closeOnOverlay(event)">
+  <div class="modal">
+    <div class="modal-search">
+      <i class="fa-solid fa-magnifying-glass"></i>
+      <input type="text" id="modalInput" placeholder="Search endpoints, paths..." autocomplete="off" oninput="filterModal(this.value)"/>
+      <span class="modal-esc" onclick="closeModal()">ESC</span>
+    </div>
+    <div class="modal-results" id="modalResults"></div>
+    <div class="modal-footer">
+      <div class="modal-hint"><kbd>↑</kbd><kbd>↓</kbd> navigate</div>
+      <div class="modal-hint"><kbd>Enter</kbd> open</div>
+      <div class="modal-hint"><kbd>ESC</kbd> close</div>
+    </div>
+  </div>
+</div>
+<footer class="footer">
+  <span class="footer-left">Anify</span>
+  <span>© <span id="year"></span> hhartur</span>
+</footer>
+
+<script>
+document.getElementById("year").textContent = new Date().getFullYear();
+</script>
+
+<style>
+.footer{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:14px 20px;
+  border-top:1px solid var(--border);
+  font-size:12px;
+  color:var(--text2);
+  font-family:var(--mono);
+  background:var(--bg2);
+}
+
+/* só aplica quando a sidebar existe */
+@media (min-width: 900px){
+  .footer{
+    margin-left:260px;
+  }
+}
+
+.footer-left{
+  font-weight:600;
+  color:var(--text);
+}
+</style>
+<script>
+// ── Base URL (persists in localStorage)
+const DEFAULT_BASE = 'http://localhost:3001';
+let BASE = (localStorage.getItem('anify-base') || DEFAULT_BASE).replace(/\/$/, '');
+
+function syncBaseUI() {
+  document.getElementById('baseUrlInput').value = BASE;
+  document.getElementById('stat-base').textContent = BASE;
+  document.getElementById('basebar-val').textContent = BASE;
+  // Update all example URL spans
+  document.querySelectorAll('.ex-base-url').forEach(el => {
+    el.textContent = el.textContent.replace(/^"https?:\/\/[^/"]+(\/[^"]*)"$/, (_, path) => `"${BASE}${path}"`);
+  });
+}
+
+function updateBase(val) {
+  BASE = (val || DEFAULT_BASE).replace(/\/$/, '');
+  localStorage.setItem('anify-base', BASE);
+  document.getElementById('stat-base').textContent = BASE;
+  document.getElementById('basebar-val').textContent = BASE;
+  document.querySelectorAll('.ex-base-url').forEach(el => {
+    el.textContent = el.textContent.replace(/^"https?:\/\/[^/"]+(\/[^"]*)"$/, (_, path) => `"${BASE}${path}"`);
+  });
+}
+
+function resetBase() {
+  BASE = DEFAULT_BASE;
+  localStorage.removeItem('anify-base');
+  syncBaseUI();
+}
+
+// Apply on load
+syncBaseUI();
+
+const PAGES = [
+  { page:'intro',        icon:'fa-solid fa-circle-dot',          name:'Introduction',    sub:'Overview',              group:'Overview' },
+  { page:'auth',         icon:'fa-solid fa-unlock',               name:'Authentication',  sub:'No auth required',      group:'Overview' },
+  { page:'errors',       icon:'fa-solid fa-triangle-exclamation', name:'Errors',          sub:'Status codes',          group:'Overview' },
+  { page:'sources-page', icon:'fa-solid fa-plug',                 name:'Sources',         sub:'GET /sources',          group:'Overview', pill:'GET' },
+  { page:'list-animes',  icon:'fa-solid fa-list',                 name:'List Animes',     sub:'GET /animes',           group:'Animes',   pill:'GET' },
+  { page:'get-anime',    icon:'fa-solid fa-circle-info',          name:'Get Anime',       sub:'GET /animes/:slug',     group:'Animes',   pill:'GET' },
+  { page:'get-episode',  icon:'fa-solid fa-play',                 name:'Get Episode',     sub:'GET /episodios/:slug',  group:'Episodes', pill:'GET' },
+  { page:'recentes',     icon:'fa-solid fa-clock-rotate-left',    name:'Recent Episodes', sub:'GET /recentes',         group:'Episodes', pill:'GET' },
+  { page:'search',       icon:'fa-solid fa-magnifying-glass',     name:'Search',          sub:'GET /busca',            group:'Discovery',pill:'GET' },
+  { page:'list-genres',  icon:'fa-solid fa-tags',                 name:'List Genres',     sub:'GET /generos',          group:'Discovery',pill:'GET' },
+  { page:'genre-animes', icon:'fa-solid fa-tag',                  name:'Genre Animes',    sub:'GET /generos/:slug',    group:'Discovery',pill:'GET' },
+];
+
+// ── Sidebar mobile
+function openSidebar()  { document.getElementById('sidebar').classList.add('open'); document.getElementById('sbBackdrop').classList.add('open'); }
+function closeSidebar() { document.getElementById('sidebar').classList.remove('open'); document.getElementById('sbBackdrop').classList.remove('open'); }
+
+// ── Router
+function navigate(pageId) {
+  document.querySelectorAll('.pane').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-a').forEach(a => a.classList.toggle('active', a.dataset.page === pageId));
+  const pane = document.getElementById('pane-' + pageId);
+  if (pane) { pane.classList.add('active'); window.scrollTo({top:0}); }
+  closeSidebar();
+}
+document.querySelectorAll('.nav-a[data-page]').forEach(a => a.addEventListener('click', () => navigate(a.dataset.page)));
+navigate('intro');
+
+// ── Theme
+(function(){
+  const t = localStorage.getItem('anify-theme');
+  if (t) { document.documentElement.dataset.theme = t; document.getElementById('themeIco').className = t==='dark' ? 'fa-solid fa-sun' : 'fa-solid fa-moon'; }
+})();
+function toggleTheme() {
+  const h = document.documentElement, dark = h.dataset.theme === 'dark';
+  h.dataset.theme = dark ? 'light' : 'dark';
+  document.getElementById('themeIco').className = dark ? 'fa-solid fa-moon' : 'fa-solid fa-sun';
+  localStorage.setItem('anify-theme', h.dataset.theme);
+}
+
+// ── Copy button
+function cp(btn) {
+  navigator.clipboard.writeText(btn.closest('.cbox').querySelector('pre').innerText).then(() => {
+    btn.innerHTML = '<i class="fa-solid fa-check"></i> Copied';
+    setTimeout(() => btn.innerHTML = '<i class="fa-regular fa-copy"></i> Copy', 2000);
+  });
+}
+
+// ── JSON syntax highlight
+function hl(json) {
+  return json.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/("(?:\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(?:true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g, m => {
+      if (/^"/.test(m)) return /:$/.test(m) ? `<span class="jk">${m}</span>` : `<span class="js">${m}</span>`;
+      if (/true|false/.test(m)) return `<span class="jb">${m}</span>`;
+      if (/null/.test(m)) return `<span class="jl">${m}</span>`;
+      return `<span class="jn">${m}</span>`;
+    });
+}
+
+// ── Input helper
+function v(id, fb='') { const el = document.getElementById(id); return el ? el.value.trim() : fb; }
+
+// ── HTTP requests
+async function req(id) {
+  let url = BASE;
+  if      (id==='sc') url += '/sources';
+  else if (id==='la') {
+    const p=v('la-page')||'1', g=v('la-genres'), m=v('la-mode').toUpperCase(), y=v('la-year');
+    url += `/animes?page=${p}`;
+    if (g) { url += `&genres=${encodeURIComponent(g)}`; if(m==='OR') url += '&mode=OR'; }
+    if (y) url += `&year=${y}`;
+  }
+  else if (id==='ga') { const s=v('ga-slug'); if(!s){alert('Enter a slug');return;} url+=`/animes/${s}`; }
+  else if (id==='ge') { const s=v('ge-slug'); if(!s){alert('Enter a slug');return;} url+=`/episodios/${s}`; }
+  else if (id==='re') url += `/recentes?page=${v('re-page')||'1'}`;
+  else if (id==='sr') {
+    const q=v('sr-q'); if(!q){alert('Enter a search term');return;}
+    const g=v('sr-genres'), m=v('sr-mode').toUpperCase();
+    url += `/busca?q=${encodeURIComponent(q)}`;
+    if(g){ url+=`&genres=${encodeURIComponent(g)}`; if(m==='OR') url+='&mode=OR'; }
+  }
+  else if (id==='gn') url += '/generos';
+  else if (id==='gg') {
+    const s=v('gg-slug'); if(!s){alert('Enter a genre slug');return;}
+    url += `/generos/${s}?page=${v('gg-page')||'1'}`;
+  }
+
+  const st=document.getElementById(`st-${id}`), ms=document.getElementById(`ms-${id}`),
+        ur=document.getElementById(`ur-${id}`), pre=document.getElementById(`pre-${id}`),
+        res=document.getElementById(`r-${id}`);
+  const btn = res.previousElementSibling.querySelector('.try-btn');
+
+  btn.disabled=true; btn.innerHTML='<i class="fa-solid fa-spinner fa-spin"></i> Sending';
+  try {
+    const t0=Date.now(), r=await fetch(url), dt=Date.now()-t0, d=await r.json();
+    st.className = r.ok ? 't-ok' : 't-err';
+    st.innerHTML = `<i class="fa-solid fa-circle" style="font-size:7px"></i> ${r.status} ${r.statusText}`;
+    ms.textContent = `${dt}ms`;
+    ur.textContent = url;
+    pre.innerHTML = hl(JSON.stringify(d, null, 2));
+    res.classList.add('show');
+  } catch(e) {
+    st.className='t-err'; st.innerHTML='<i class="fa-solid fa-circle" style="font-size:7px"></i> Network Error';
+    ms.textContent=''; ur.textContent='';
+    pre.textContent = e.message + '\n\nIs the API running at ' + BASE + '?';
+    res.classList.add('show');
+  } finally {
+    btn.disabled=false; btn.innerHTML='<i class="fa-solid fa-paper-plane"></i> Send';
+  }
+}
+
+// ── Modal search
+let focusIdx = -1;
+function openModal() {
+  document.getElementById('modalOverlay').classList.add('open');
+  document.getElementById('modalInput').value = '';
+  focusIdx = -1; renderModal(PAGES);
+  setTimeout(() => document.getElementById('modalInput').focus(), 40);
+}
+function closeModal()       { document.getElementById('modalOverlay').classList.remove('open'); focusIdx=-1; }
+function closeOnOverlay(e)  { if(e.target===document.getElementById('modalOverlay')) closeModal(); }
+
+function renderModal(items) {
+  const c = document.getElementById('modalResults');
+  if (!items.length) { c.innerHTML='<div class="modal-empty"><i class="fa-solid fa-face-frown" style="font-size:20px;display:block;margin-bottom:8px"></i>No results found</div>'; return; }
+  const groups = {};
+  items.forEach(p => { if(!groups[p.group]) groups[p.group]=[]; groups[p.group].push(p); });
+  c.innerHTML = Object.entries(groups).map(([g,ps]) =>
+    `<div class="modal-group-lbl">${g}</div>` + ps.map(p =>
+      `<div class="modal-item" data-page="${p.page}" onclick="selectModal('${p.page}')">
+        <i class="${p.icon}"></i>
+        <span class="modal-item-name">${p.name}</span>
+        <span class="modal-item-sub">${p.sub}</span>
+        ${p.pill ? `<span class="modal-item-pill">${p.pill}</span>` : ''}
+      </div>`
+    ).join('')
+  ).join('');
+}
+
+function filterModal(q) {
+  focusIdx = -1;
+  const t = q.toLowerCase().trim();
+  renderModal(t ? PAGES.filter(p => p.name.toLowerCase().includes(t) || p.sub.toLowerCase().includes(t) || p.group.toLowerCase().includes(t)) : PAGES);
+}
+function selectModal(pageId) { navigate(pageId); closeModal(); }
+function getItems()          { return [...document.querySelectorAll('.modal-item')]; }
+function updateFocus(items)  { items.forEach((el,i)=>el.classList.toggle('focused',i===focusIdx)); items[focusIdx]?.scrollIntoView({block:'nearest'}); }
+
+document.addEventListener('keydown', e => {
+  const isOpen = document.getElementById('modalOverlay').classList.contains('open');
+  if ((e.metaKey||e.ctrlKey) && e.key==='k') { e.preventDefault(); isOpen ? closeModal() : openModal(); return; }
+  if (!isOpen) return;
+  const items = getItems();
+  if (e.key==='Escape')    { closeModal(); return; }
+  if (e.key==='ArrowDown') { e.preventDefault(); focusIdx=Math.min(focusIdx+1, items.length-1); updateFocus(items); }
+  if (e.key==='ArrowUp')   { e.preventDefault(); focusIdx=Math.max(focusIdx-1, 0); updateFocus(items); }
+  if (e.key==='Enter' && focusIdx>=0 && items[focusIdx]) selectModal(items[focusIdx].dataset.page);
+});
+</script>
+</body>
+</html>
