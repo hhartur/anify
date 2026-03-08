@@ -2,7 +2,7 @@ const WORKER = process.env.PROXY_WORKER_URL || "";
 
 const UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36";
 
-async function http(url, referer = BASE) {
+export async function http(url, referer = BASE) {
   const WORKER = process.env.PROXY_WORKER_URL || "";
   
   console.log(`[http] PROXY_WORKER_URL=${WORKER || "(vazio)"}`);
