@@ -26,7 +26,7 @@ import {
   defaultSource,
 } from "./sources/index.js";
 
-import { PORT, API_BASE_URL } from "./config.js";
+import { PORT, API_BASE_URL } from "./common/config.js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
@@ -211,7 +211,7 @@ initSources(PORT);
 // GET /docs
 app.get("/docs", async (req, reply) => {
   try {
-    const html = readFileSync(join(__dirname, "docs.html"), "utf8");
+    const html = readFileSync(join(__dirname, "static", "docs.html"), "utf8");
     reply.header("content-type", "text/html; charset=utf-8").send(html);
   } catch {
     reply.status(404).send({ error: "docs.html not found" });
