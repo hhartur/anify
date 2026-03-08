@@ -508,7 +508,10 @@ app.get("/recentes", async (req) => {
 });
 
 // ── Start
-await app.listen({ port: PORT, host: "0.0.0.0" });
+export default async function handler(req, res) {
+  await app.ready();
+  app.server.emit("request", req, res);
+}
 console.log(`\n🚀 Anify API v2.1 em ${API_BASE_URL}`);
 console.log(`📖 Docs:    ${API_BASE_URL}/docs`);
 console.log(`🔌 Fontes:  ${listSources().map((s) => s.id).join(", ")}\n`);
