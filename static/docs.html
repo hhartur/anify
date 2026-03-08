@@ -908,7 +908,7 @@ document.getElementById("year").textContent = new Date().getFullYear();
 </style>
 <script>
 // ── Base URL (persists in localStorage)
-const DEFAULT_BASE = 'http://localhost:3001';
+const DEFAULT_BASE = 'https://anify.hhartur.com.br';
 let BASE = (localStorage.getItem('anify-base') || DEFAULT_BASE).replace(/\/$/, '');
 
 function syncBaseUI() {
