@@ -27,7 +27,7 @@ import {
 } from "./parsers.js";
 
 const BASE = "https://animesonlinecc.to";
-const UA   =
+const UA =
   "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36";
 
 // ── HTTP
@@ -37,6 +37,16 @@ async function http(url, referer = BASE) {
       "User-Agent": UA,
       Referer: referer,
       "Accept-Language": "pt-BR,pt;q=0.9",
+      Accept:
+        "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8",
+      "Accept-Encoding": "gzip, deflate, br",
+      "Cache-Control": "no-cache",
+      Pragma: "no-cache",
+      "Sec-Fetch-Dest": "document",
+      "Sec-Fetch-Mode": "navigate",
+      "Sec-Fetch-Site": "none",
+      "Sec-Fetch-User": "?1",
+      "Upgrade-Insecure-Requests": "1",
     },
   });
   if (!res.ok)
@@ -74,7 +84,8 @@ export function cleanUrls(obj) {
   if (obj && typeof obj === "object") {
     const out = {};
     for (const k in obj)
-      out[k] = typeof obj[k] === "string" ? normalizePath(obj[k]) : cleanUrls(obj[k]);
+      out[k] =
+        typeof obj[k] === "string" ? normalizePath(obj[k]) : cleanUrls(obj[k]);
     return out;
   }
   return obj;
@@ -103,12 +114,11 @@ async function applyGenreFilter(list, genres, mode, page) {
   return list.filter((a) => filterSet.has(a.slug));
 }
 
-
 // ════════════════════════════════════════════════════════════
 // Fonte: animesonlinecc
 // ════════════════════════════════════════════════════════════
 const source = {
-  id:   "animesonlinecc",
+  id: "animesonlinecc",
   name: "Animes Online CC",
 
   // Chamado pelo api.js para injetar a porta — propaga para os parsers também
@@ -123,13 +133,13 @@ const source = {
 
   // ── Lista de animes com filtros opcionais
   async listAnimes({ page = 1, genres = null, mode = "AND" } = {}) {
-    const url =
-      page === 1 ? `${BASE}/anime/` : `${BASE}/anime/page/${page}/`;
+    const url = page === 1 ? `${BASE}/anime/` : `${BASE}/anime/page/${page}/`;
     const html = await http(url);
     const totalPages = parseTotalPages(html, /\/anime\/page\/(\d+)\//g);
     let animes = parseAnimeList(html);
 
-    if (genres?.length) animes = await applyGenreFilter(animes, genres, mode, page);
+    if (genres?.length)
+      animes = await applyGenreFilter(animes, genres, mode, page);
 
     return { page, totalPages, count: animes.length, animes };
   },
@@ -152,7 +162,8 @@ const source = {
     let animes = parseAnimeList(html);
 
     // Episódios encontrados na busca
-    const epRe   = /href="(https?:\/\/animesonlinecc\.to\/episodio\/([^/"]+)\/?)"/gi;
+    const epRe =
+      /href="(https?:\/\/animesonlinecc\.to\/episodio\/([^/"]+)\/?)"/gi;
     const epSeen = new Set();
     const episodes = [];
     let em;
@@ -161,7 +172,7 @@ const source = {
         epSeen.add(em[2]);
         episodes.push({
           slug: em[2],
-          url:  `http://localhost:${API_PORT}/episodios/${em[2]}`,
+          url: `http://localhost:${API_PORT}/episodios/${em[2]}`,
         });
       }
     }
@@ -173,7 +184,8 @@ const source = {
   // ── Lista de gêneros
   async listGenres() {
     const html = await http(`${BASE}/anime/`);
-    const re   = /href="https?:\/\/animesonlinecc\.to\/genero\/([^/"]+)\/?">([^<]+)<\/a>/gi;
+    const re =
+      /href="https?:\/\/animesonlinecc\.to\/genero\/([^/"]+)\/?">([^<]+)<\/a>/gi;
     const seen = new Set();
     const generos = [];
     let m;
@@ -192,9 +204,9 @@ const source = {
 
   // ── Episódios recentes
   async listRecent({ page = 1 } = {}) {
-    const url  = page === 1 ? `${BASE}/` : `${BASE}/page/${page}/`;
+    const url = page === 1 ? `${BASE}/` : `${BASE}/page/${page}/`;
     const html = await http(url);
-    const re   =
+    const re =
       /href="(https?:\/\/animesonlinecc\.to\/episodio\/([^/"]+)-episodio-(\d+)\/?)"[^>]*>([^<]*)/gi;
     const seen = new Set();
     const episodes = [];
@@ -232,7 +244,9 @@ const source = {
   // ── Proxy de imagem (retorna buffer + content-type)
   async fetchImage(path) {
     const url = `${BASE}/${path}`;
-    const res = await fetch(url, { headers: { "User-Agent": UA, Referer: BASE } });
+    const res = await fetch(url, {
+      headers: { "User-Agent": UA, Referer: BASE },
+    });
     return {
       buffer: Buffer.from(await res.arrayBuffer()),
       contentType: res.headers.get("content-type") || "image/jpeg",
