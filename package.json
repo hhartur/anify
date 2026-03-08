@@ -1,4 +1,7 @@
 {
+  "scripts": {
+    "start": "bun api"
+  },
   "dependencies": {
     "@fastify/cors": "^11.2.0",
     "@fastify/static": "^9.0.0",
